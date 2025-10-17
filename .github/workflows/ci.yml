@@ -19,7 +19,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.13'
 
     - name: Install dependencies
       run: |
@@ -67,18 +67,6 @@ jobs:
           echo "📥 Pulling ${{ env.OLLAMA_MODEL }} model..."
           ollama pull ${{ env.OLLAMA_MODEL }}
         fi
-
-    - name: Load model
-      run: |
-        echo "Loading ${{ env.OLLAMA_MODEL }} model..."
-        timeout 30 ollama run ${{ env.OLLAMA_MODEL }} "hello" > /dev/null 2>&1 || echo "Model load attempt complete"
-
-    - name: Verify Ollama setup
-      run: |
-        echo "Checking Ollama status..."
-        ps aux | grep ollama || echo "Ollama process not found"
-        curl -v http://localhost:11434/api/tags 2>&1 | head -10
-        curl -s http://localhost:11434/api/tags | jq '.models[0].name' 2>/dev/null || echo "Failed to get model list"
 
     - name: Wait for Ollama to be ready
       run: |
