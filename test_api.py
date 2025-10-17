@@ -29,9 +29,9 @@ class TestOllamaClient:
         try:
             response = requests.get("http://localhost:11434/api/tags", timeout=5)
             if response.status_code != 200:
-                pytest.skip("Ollama server not responding")
+                pytest.fail("Ollama server not responding")
         except requests.exceptions.RequestException:
-            pytest.skip("Ollama server not available")
+            pytest.fail("Ollama server not available")
 
         client = OllamaClient()
         messages = [{"role": "user", "content": "Say 'test' and nothing else."}]
@@ -47,10 +47,10 @@ class TestOllamaClient:
                 if len(chunks) >= 5 or (time.time() - start_time) > 10:
                     break
         except Exception:
-            pytest.skip("Ollama streaming failed")
+            pytest.fail("Ollama streaming failed")
 
         if len(chunks) == 0:
-            pytest.skip("No chunks received from Ollama")
+            pytest.fail("No chunks received from Ollama")
 
         # Verify structure
         for chunk in chunks:

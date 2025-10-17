@@ -78,11 +78,6 @@ jobs:
           sleep 3
         done
 
-    - name: Run Ollama client tests
-      run: |
-        echo "Running Ollama integration tests..."
-        python test_ollama.py
-
     - name: Run pytest tests
       run: |
         python -m pytest -v --tb=short -m "not integration"
