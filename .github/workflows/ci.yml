@@ -46,7 +46,7 @@ jobs:
 
     - name: Show cache status
       run: |
-        if [ "${{ steps.ollama-cache.outputs.cache-hit }}" == "true" ]; then
+        if [ -d ~/.ollama/models ] && [ "$(ls -A ~/.ollama/models/ 2>/dev/null)" ]; then
           echo "✅ Using cached ${{ env.OLLAMA_MODEL }} model (~600MB saved!)"
           MODEL_SIZE=$(du -sh ~/.ollama/ 2>/dev/null | cut -f1 || echo "unknown")
           echo "💾 Cached Ollama data size: $MODEL_SIZE"
