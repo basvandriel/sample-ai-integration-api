@@ -38,9 +38,10 @@ jobs:
       id: ollama-cache
       with:
         path: ~/.ollama
-        key: ollama-${{ env.OLLAMA_MODEL }}-${{ runner.os }}
+        key: ollama-${{ env.OLLAMA_MODEL }}-v1-${{ runner.os }}
         restore-keys: |
-          ollama-tinyllama-
+          ollama-${{ env.OLLAMA_MODEL }}-v1-
+          ollama-${{ env.OLLAMA_MODEL }}-
           ollama-
 
     - name: Show cache status
