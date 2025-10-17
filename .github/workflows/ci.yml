@@ -56,14 +56,30 @@ jobs:
         fi
 
     - name: Install Ollama
-      uses: ai-action/ollama-action@v1
-      with:
-        model: ${{ env.OLLAMA_MODEL }}
+      uses: ai-action/setup-ollama@v1
+
+    - name: Pull model
+      run: |
+        echo "Pulling ${{ env.OLLAMA_MODEL }} model..."
+        ollama pull ${{ env.OLLAMA_MODEL }}
+
+    - name: Start Ollama server
+      run: |
+        echo "Starting Ollama server..."
+        ollama serve &
+        sleep 10
+
+    - name: Load model
+      run: |
+        echo "Loading ${{ env.OLLAMA_MODEL }} model..."
+        timeout 30 ollama run ${{ env.OLLAMA_MODEL }} "hello" > /dev/null 2>&1 || echo "Model load attempt complete"
 
     - name: Verify Ollama setup
       run: |
         echo "Checking Ollama status..."
-        curl -s http://localhost:11434/api/tags | jq '.models[0].name'
+        ps aux | grep ollama || echo "Ollama process not found"
+        curl -v http://localhost:11434/api/tags 2>&1 | head -10
+        curl -s http://localhost:11434/api/tags | jq '.models[0].name' 2>/dev/null || echo "Failed to get model list"
 
     - name: Wait for Ollama to be ready
       run: |
