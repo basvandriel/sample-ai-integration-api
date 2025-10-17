@@ -7,8 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  OLLAMA_MODEL: tinyllama  # ~600MB - blazing fast CI!
-                           # Other options: phi (1.3GB), llama2:7b (3.8GB), mistral:7b (4.1GB)
+  OLLAMA_MODEL: tinyllama  # ~600MB
 
 jobs:
   test:
