@@ -8,9 +8,7 @@ def test_ollama_client_initialization():
     """Test that OllamaClient can be initialized."""
     settings = load_settings()
     client = ChatClientFactory.create_client(
-        provider="ollama",
-        model=settings.CHAT_MODEL,
-        host=settings.OLLAMA_HOST
+        provider="ollama", model=settings.CHAT_MODEL, host=settings.OLLAMA_HOST
     )
     assert client.model == settings.CHAT_MODEL
     assert client.url == f"{settings.OLLAMA_HOST}/api/chat"
@@ -20,9 +18,7 @@ def test_ollama_streaming_response():
     """Test that OllamaClient returns streaming responses."""
     settings = load_settings()
     client = ChatClientFactory.create_client(
-        provider="ollama",
-        model=settings.CHAT_MODEL,
-        host=settings.OLLAMA_HOST
+        provider="ollama", model=settings.CHAT_MODEL, host=settings.OLLAMA_HOST
     )
 
     # First check if Ollama is available
