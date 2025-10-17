@@ -1,22 +1,33 @@
-from ollama_client import OllamaClient
 import requests
 import time
+from bootstrap import load_settings
+from chat_client_factory import ChatClientFactory
 
 
 def test_ollama_client_initialization():
     """Test that OllamaClient can be initialized."""
-    client = OllamaClient()
-    assert client.model == "mistral"
-    assert client.url == "http://localhost:11434/api/chat"
+    settings = load_settings()
+    client = ChatClientFactory.create_client(
+        provider="ollama",
+        model=settings.CHAT_MODEL,
+        host=settings.OLLAMA_HOST
+    )
+    assert client.model == settings.CHAT_MODEL
+    assert client.url == f"{settings.OLLAMA_HOST}/api/chat"
 
 
 def test_ollama_streaming_response():
     """Test that OllamaClient returns streaming responses."""
-    client = OllamaClient()
+    settings = load_settings()
+    client = ChatClientFactory.create_client(
+        provider="ollama",
+        model=settings.CHAT_MODEL,
+        host=settings.OLLAMA_HOST
+    )
 
     # First check if Ollama is available
     try:
-        response = requests.get("http://localhost:11434/api/tags", timeout=5)
+        response = requests.get(f"{settings.OLLAMA_HOST}/api/tags", timeout=5)
         if response.status_code != 200:
             print("⚠️  Ollama server not responding, skipping streaming test")
             return
