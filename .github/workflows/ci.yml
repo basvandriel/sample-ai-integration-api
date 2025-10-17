@@ -67,7 +67,7 @@ jobs:
         fi
 
     - name: Wait for Ollama to be ready
-      run: |
+      run: |  
         echo "Waiting for Ollama to be fully ready..."
         for i in {1..30}; do
           if curl -s http://localhost:11434/api/generate -X POST -H "Content-Type: application/json" -d '{"model": "tinyllama", "prompt": "test", "stream": false}' | jq -r '.response' > /dev/null 2>&1; then

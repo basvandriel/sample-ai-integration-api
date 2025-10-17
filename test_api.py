@@ -1,7 +1,8 @@
 """Tests for the AI integration API."""
 
 import pytest
-from ollama_client import OllamaClient
+from bootstrap import load_settings
+from chat_client_factory import ChatClientFactory
 
 
 class TestOllamaClient:
@@ -9,15 +10,21 @@ class TestOllamaClient:
 
     def test_initialization(self):
         """Test client initialization with default values."""
-        client = OllamaClient()
-        assert client.model == "mistral"  # Default model
-        assert "localhost:11434" in client.url
+        settings = load_settings()
+        client = ChatClientFactory.create_client(
+            provider="ollama", model=settings.CHAT_MODEL, host=settings.OLLAMA_HOST
+        )
+        assert client.model == settings.CHAT_MODEL
+        assert settings.OLLAMA_HOST in client.url
 
     def test_tinyllama_initialization(self):
         """Test client initialization with tinyllama model."""
-        client = OllamaClient(model="tinyllama")
+        settings = load_settings()
+        client = ChatClientFactory.create_client(
+            provider="ollama", model="tinyllama", host=settings.OLLAMA_HOST
+        )
         assert client.model == "tinyllama"
-        assert "localhost:11434" in client.url
+        assert settings.OLLAMA_HOST in client.url
 
     @pytest.mark.integration
     def test_streaming_response_structure(self):
@@ -25,15 +32,19 @@ class TestOllamaClient:
         import requests
         import time
 
+        settings = load_settings()
+
         # Check if Ollama is available
         try:
-            response = requests.get("http://localhost:11434/api/tags", timeout=5)
+            response = requests.get(f"{settings.OLLAMA_HOST}/api/tags", timeout=5)
             if response.status_code != 200:
                 pytest.fail("Ollama server not responding")
         except requests.exceptions.RequestException:
             pytest.fail("Ollama server not available")
 
-        client = OllamaClient()
+        client = ChatClientFactory.create_client(
+            provider="ollama", model=settings.CHAT_MODEL, host=settings.OLLAMA_HOST
+        )
         messages = [{"role": "user", "content": "Say 'test' and nothing else."}]
 
         # Collect chunks with timeout
