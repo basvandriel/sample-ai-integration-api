@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  OLLAMA_MODEL: tinyllama  # ~600MB - blazing fast CI!
+                           # Other options: phi (1.3GB), llama2:7b (3.8GB), mistral:7b (4.1GB)
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -21,13 +25,35 @@ jobs:
     - name: Create test environment
       run: |
         echo "CHAT_PROVIDER=ollama" > .env
-        echo "CHAT_MODEL=mistral" >> .env
+        echo "CHAT_MODEL=${{ env.OLLAMA_MODEL }}" >> .env
         echo "OLLAMA_HOST=http://localhost:11434" >> .env
+
+    - name: Cache Ollama models
+      uses: actions/cache@v4
+      id: ollama-cache
+      with:
+        path: ~/.ollama/models
+        key: ollama-models-${{ env.OLLAMA_MODEL }}-${{ runner.os }}
+        restore-keys: |
+          ollama-models-tinyllama-
+          ollama-models-
+
+    - name: Show cache status
+      run: |
+        if [ "${{ steps.ollama-cache.outputs.cache-hit }}" == "true" ]; then
+          echo "✅ Using cached ${{ env.OLLAMA_MODEL }} model (~600MB saved!)"
+          MODEL_SIZE=$(du -sh ~/.ollama/models/ 2>/dev/null | cut -f1 || echo "unknown")
+          echo "💾 Cached models size: $MODEL_SIZE"
+          echo "⚡ CI will be ~2-3 minutes faster!"
+        else
+          echo "📥 Downloading ${{ env.OLLAMA_MODEL }} model (~600MB)"
+          echo "🐌 First run will be slower, but subsequent runs will be cached"
+        fi
 
     - name: Install Ollama
       uses: ai-action/ollama-action@v1
       with:
-        model: mistral
+        model: ${{ env.OLLAMA_MODEL }}
 
     - name: Verify Ollama setup
       run: |

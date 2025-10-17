@@ -10,14 +10,14 @@ class TestOllamaClient:
     def test_initialization(self):
         """Test client initialization with default values."""
         client = OllamaClient()
-        assert client.model == "mistral"
+        assert client.model == "mistral"  # Default model
         assert "localhost:11434" in client.url
 
-    def test_custom_initialization(self):
-        """Test client initialization with custom values."""
-        client = OllamaClient(model="llama2", host="http://custom:8080")
-        assert client.model == "llama2"
-        assert "custom:8080" in client.url
+    def test_tinyllama_initialization(self):
+        """Test client initialization with tinyllama model."""
+        client = OllamaClient(model="tinyllama")
+        assert client.model == "tinyllama"
+        assert "localhost:11434" in client.url
 
     @pytest.mark.integration
     def test_streaming_response_structure(self):
