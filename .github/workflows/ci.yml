@@ -65,9 +65,22 @@ jobs:
         echo "Checking Ollama status..."
         curl -s http://localhost:11434/api/tags | jq '.models[0].name'
 
+    - name: Wait for Ollama to be ready
+      run: |
+        echo "Waiting for Ollama to be fully ready..."
+        for i in {1..30}; do
+          if curl -s http://localhost:11434/api/generate -X POST -H "Content-Type: application/json" -d '{"model": "tinyllama", "prompt": "test", "stream": false}' | jq -r '.response' > /dev/null 2>&1; then
+            echo "✅ Ollama is ready!"
+            break
+          fi
+          echo "Waiting for Ollama... ($i/30)"
+          sleep 3
+        done
+
     - name: Run Ollama client tests
       run: |
-        timeout 30 python test_ollama.py
+        echo "Running Ollama integration tests..."
+        python test_ollama.py
 
     - name: Run pytest tests
       run: |
