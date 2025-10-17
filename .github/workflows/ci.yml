@@ -63,12 +63,6 @@ jobs:
         echo "Pulling ${{ env.OLLAMA_MODEL }} model..."
         ollama pull ${{ env.OLLAMA_MODEL }}
 
-    - name: Start Ollama server
-      run: |
-        echo "Starting Ollama server..."
-        ollama serve &
-        sleep 10
-
     - name: Load model
       run: |
         echo "Loading ${{ env.OLLAMA_MODEL }} model..."
