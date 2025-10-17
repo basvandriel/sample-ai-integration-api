@@ -37,18 +37,18 @@ jobs:
       uses: actions/cache@v4
       id: ollama-cache
       with:
-        path: ~/.ollama/models
-        key: ollama-models-${{ env.OLLAMA_MODEL }}-${{ runner.os }}
+        path: ~/.ollama
+        key: ollama-${{ env.OLLAMA_MODEL }}-${{ runner.os }}
         restore-keys: |
-          ollama-models-tinyllama-
-          ollama-models-
+          ollama-tinyllama-
+          ollama-
 
     - name: Show cache status
       run: |
         if [ "${{ steps.ollama-cache.outputs.cache-hit }}" == "true" ]; then
           echo "✅ Using cached ${{ env.OLLAMA_MODEL }} model (~600MB saved!)"
-          MODEL_SIZE=$(du -sh ~/.ollama/models/ 2>/dev/null | cut -f1 || echo "unknown")
-          echo "💾 Cached models size: $MODEL_SIZE"
+          MODEL_SIZE=$(du -sh ~/.ollama/ 2>/dev/null | cut -f1 || echo "unknown")
+          echo "💾 Cached Ollama data size: $MODEL_SIZE"
           echo "⚡ CI will be ~2-3 minutes faster!"
         else
           echo "📥 Downloading ${{ env.OLLAMA_MODEL }} model (~600MB)"
@@ -60,8 +60,13 @@ jobs:
 
     - name: Pull model
       run: |
-        echo "Pulling ${{ env.OLLAMA_MODEL }} model..."
-        ollama pull ${{ env.OLLAMA_MODEL }}
+        echo "Checking if ${{ env.OLLAMA_MODEL }} model is already available..."
+        if ollama list | grep -q "${{ env.OLLAMA_MODEL }}"; then
+          echo "✅ Model ${{ env.OLLAMA_MODEL }} already available, skipping pull"
+        else
+          echo "📥 Pulling ${{ env.OLLAMA_MODEL }} model..."
+          ollama pull ${{ env.OLLAMA_MODEL }}
+        fi
 
     - name: Load model
       run: |
