@@ -1,5 +1,5 @@
 from typing import Dict, Generator, List
-from openai import OpenAI
+from openai import AzureOpenAI
 from models import ChatCompletionChunk, Choice, Delta
 from chat_client import ChatClient
 
@@ -8,15 +8,15 @@ class OpenAIClient(ChatClient):
     def __init__(
         self,
         api_key: str,
-        model: str = "gpt-3.5-turbo",
+        model: str = "gpt-4.1",
         base_url: str = None,
         api_version: str = None,
     ) -> None:
         self.model = model
-        self.client = OpenAI(
+        self.client = AzureOpenAI(
+            azure_endpoint=base_url,
             api_key=api_key,
-            base_url=base_url,
-            default_headers={"api-key": api_key} if api_version else None,
+            api_version=api_version,
         )
 
     def chat_completion(

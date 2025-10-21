@@ -15,7 +15,7 @@ class Settings(BaseSettings):
         default="openai", description="Chat provider to use: 'openai' or 'ollama'"
     )
     CHAT_MODEL: str = Field(
-        default="gpt-3.5-turbo", description="Model to use for chat completions"
+        default="gpt-4.1", description="Model to use for chat completions"
     )
 
     # OpenAI configuration (optional when using Ollama)
